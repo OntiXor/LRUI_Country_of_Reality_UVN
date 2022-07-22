@@ -1,0 +1,62 @@
+Registers
+Common:
+AR = ARH:ARL
+BR = BRH:BRL
+CR = CRH:CRL
+DR = DRH:DRL
+ER = ERH:ERL
+FR = FRH:FRL
+GR = GRH:GRL
+Technic:
+OA = OAH:OAL (Overflow Accomulator)
+Index:
+I0, I1, I2, I3, I4, I5, BE (Base), SK (Stack)
+Segment:
+.ZS (Zero Segment, Immutable)
+.CS (Code Segment)
+.DS (Data Segment)
+.SS (Stack Segment)
+.GS (Graphics Segment)
+.S0, .S1, .S2, .S3, .S4, .S5, .S6, .S7, .S8, .S9, .SX
+===========================-
+- MOV Receiver, Source
+Receiver may be: 8 and 16 bit register
+Source may be: 8 and 16 bit register, value
+Example: MOV AR, 0x76AA
+	 MOV CR, AR
+	 MOV CRH, ARL
+============================
+- ASG Receiver, Receiver, Source
+Receiver may be: 8 and 16 bit register
+Source may be: value only
+Example: ASG AR, CR, 0x76AA
+	 ASG BR, BR, 0x01A0
+	 ASG BRL, BRH, 0xFF
+============================
+- MEM .Segement, Offset-Register, Source, Source
+- MEM Receiver, Receiver, .Segement, Offset-Register (only 16 bit)
+[.Segemt:Offset-Register] = Source|Source
+Receiver(s) = [.Segemt:Offset-Register]
+.Segemt may be only segment register
+Offset-Register may be only 16-bit register
+Source and Receiver may be both only 8 or 16 bit register
+Example: MEM .DS, I0, ARL, ARH
+	 MEM BR, CR, .DS, I0
+	 MEM I0, SA, .SS, SA
+============================
+- ADD Receiver, Source
+Receiver may be: 8 and 16 bit register
+Source may be: 8 and 16 bit register, value
+Result is plased to pair OA:Receiver
+Example: ADD AR, 0xFFFE
+	 ADD AR, CR
+	 ADD CR, OA
+	 ADD I0, CR
+============================
+- PLUS Receiver-1, Receiver-2, Source
+Receiver may be: 8 and 16 bit register
+Source: value only
+Result is plased to pair OAH:Receiver-1, OAL:Receiver-2
+Example: PLUS AR, AR, 2
+	 PLUS AR, BR, 0x880A
+	 PLUS I1, I0, 0xFF00
