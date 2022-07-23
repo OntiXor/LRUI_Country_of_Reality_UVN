@@ -1,195 +1,193 @@
 NoInstruction: inc word[_IP]
                ret
 
-
-macro GetREA8 r1, r2, _add {
-      movzx r1, byte[esi+_add]
-      mov r2, r1
-      and r2, 0x0F
-      and r1, 0xF0
-      shr r1, 4
-      add r1, REGS
-      add r2, REGS
-      xchg r1, r2
+macro LEA16 rg1, rg2, num {
+      movzx rg1, byte[esi+num]
+      mov rg2, rg1
+      and rg2, 0x0F
+      shr rg1, 4
+      lea rg1, [rg1+rg1+REGS]
+      lea rg2, [rg2+rg2+REGS]
+}
+macro LEA8 rg1, rg2, num {
+      movzx rg1, byte[esi+num]
+      mov rg2, rg1
+      and rg1, 0x0F
+      shr rg2, 4
+      lea rg1, [rg1+REGS]
+      lea rg2, [rg2+REGS]
+}
+macro ReadByEA16 rg1, rg2, rs1, rs2 {
+      movzx rg1, word[rs1]
+      movzx rg2, word[rs2]
+      push ebp
+      mov ebp, rg1
+      rol bp, 8
+      mov rg1, ebp
+      mov ebp, rg2
+      rol bp, 8
+      mov rg2, ebp
+      pop ebp
 }
 
-macro GetREA16 r1, r2, _add {
-      movzx r1, byte[esi+_add]
-      mov r2, r1
-      and r2, 0x0F
-      and r1, 0xF0
-      shr r1, 4
-      lea r1, [r1+r1+REGS]
-      lea r2, [r2+r2+REGS]
-      xchg r1, r2
+macro Load16 addres, source {
+	push ebp
+	mov bp, source
+	rol bp, 8
+	mov [addres], bp
+	pop ebp
 }
 
-macro LoadAddr rg, num {
-      mov rg, [MEM_ADDR]
-      push eax
-      push ebx
-      movzx eax, byte[esi+num]
-      and al, 0xF0
-      shr al, 4
-      lea eax, [eax+eax+SEGMENTS]
-      movzx ebx, word[eax]
-      shl ebx, 4
-      add rg, ebx
-      movzx eax, byte[esi+num]
-      and al, 0x0F
-      lea eax, [eax+eax+REGS]
-      movzx ebx, word[eax]
-      xchg bh, bl
-      add rg, ebx
-      pop ebx
-      pop eax
+macro GetAddr rg, num {
+	  push eax
+	  push ebx
+	  push ecx
+	  push edx
+	  movzx eax, byte[esi+num]
+	  mov ebx, eax
+	  and al, 0x0F
+	  shr bl, 4
+	  lea ebx, [ebx+ebx+SEGMENTS]
+	  lea eax, [eax+eax+REGS]
+	  mov rg, dword[ebx]
+	  shl rg, 4
+	  movzx ecx, word[eax]
+	  xchg ch, cl
+	  add rg, ecx
+	  add rg, [MEM_ADDR]
+	  pop edx
+	  pop ecx
+	  pop ebx
+	  pop eax
 }
 
-MovValueToByte: GetREA8 ebx, eax, 1
-                mov dl, [esi+2]
-                mov [ebx], dl
-                mov [eax], dl
+;==================================
+
+MovValueToByte: LEA8 ebx, eax, 1
+				mov dl, [esi+2]
+				mov [ebx], dl
+				mov [eax], dl
                 add word[_IP], 3 ;add si, 3
                 ret
 
-Mov8To8: GetREA8 ebx, eax, 1
-         mov dl, [ebx]
-         mov [eax], dl
+Mov8To8: LEA8 ebx, eax, 1
+         mov dl, [eax]
+         mov [ebx], dl
          add word[_IP], 2 ;add si, 2
          ret
 
-MovValueToWord: GetREA16 ebx, eax, 1
+MovValueToWord: LEA16 ebx, eax, 1
                 mov cx, [esi+2]
-                mov [ebx], cx
                 mov [eax], cx
+                mov [ebx], cx
                 add word[_IP], 4 ;add si, 4
                 ret
-Mov16To16: GetREA16 ebx, eax, 1
-           mov cx, [ebx]
-           mov [eax], cx
+Mov16To16: LEA16 ebx, eax, 1
+           mov cx, [eax]
+           mov [ebx], cx
            add word[_IP], 2 ;add si, 2
            ret
 
-AddValueTo8: GetREA8 ebx, eax, 1
+AddValueTo8: LEA8 ebx, eax, 1
              cmp ebx, eax
              je AVT8Once
-                xor ecx, ecx
-                xor edx, edx
-                mov cl, [eax]
-                mov dl, [esi+2]
-                add cx, dx
-                mov [_OAH], ch
-                mov [eax], cl
+                movzx dx, byte[ebx]
+				movzx cx, byte[esi+2]
+				add dx, cx
+				mov [ebx], dl
+				mov [_OAH], dh
              AVT8Once:
-                xor ecx, ecx
-                xor edx, edx
-                mov cl, [ebx]
-                mov dl, [esi+2]
-                add cx, dx
-                mov [_OAL], ch
-                mov [ebx], cl
+                movzx dx, byte[eax]
+				movzx cx, byte[esi+2]
+				add dx, cx
+				mov [eax], dl
+				mov [_OAL], dh
              add word[_IP], 3 ;add si, 3
              ret
 
-Add8With8: GetREA8 ebx, eax, 1
-           xchg ebx, eax
-           xor edx, edx
-           xor ecx, ecx
-           mov cl, [ebx]
-           mov dl, [eax]
-           add dx, cx
-           mov [_OAL], dh
-           mov [ebx], dl
+Add8With8: LEA8 ebx, eax, 1
+		   movzx dx, byte[ebx]
+		   movzx cx, byte[eax]
+		   add dx, cx
+		   mov [ebx], dl
+		   mov [_OAL], dh
            add word[_IP], 2 ;add si, 2
            ret
 
 
-Add16With16: GetREA16 ebx, eax, 1
-             xor ecx, ecx
-             xor edx, edx
-             mov cx, [ebx]
-             mov dx, [eax]
-             xchg ch, cl
-             xchg dh, dl
-             add edx, ecx
-             xchg dh, dl
-             mov [eax], dx
-             shr edx, 16
-             mov [_OAL], dl
+Add16With16: LEA16 ebx, eax, 1
+			 ReadByEA16 edx, ecx, ebx, eax
+			 add edx, ecx
+			 Load16 ebx, dx
+			 shr edx, 8
+			 mov [_OA], dx
              add word[_IP], 2
              ret
 
-AddValueTo16: GetREA16 ebx, eax, 1
+AddValueTo16: LEA16 ebx, eax, 1
               cmp eax, ebx
               je AVT16Once
-                 xor ecx, ecx
-                 xor edx, edx
-                 mov cx, [eax]
-                 xchg cl, ch
-                 mov dx, [esi+2]
-                 xchg dh, dl
-                 add ecx, edx
-                 xchg ch, cl
-                 mov [eax], cx
-                 shr ecx, 16
-                 mov [_OAH], cl
+                 ReadByEA16 edx, edx, ebx, ebx
+				 movzx ecx, word[esi+2]
+				 xchg ch, cl
+				 add edx, ecx
+				 Load16 ebx, dx
+				 shr edx, 8
+				 mov [_OAH], dh
               AVT16Once:
-                 xor ecx, ecx
-                 xor edx, edx
-                 mov cx, [ebx]
-                 xchg cl, ch
-                 mov dx, [esi+2]
-                 xchg dh, dl
-                 add ecx, edx
-                 xchg ch, cl
-                 mov [ebx], cx
-                 shr ecx, 16
-                 mov [_OAL], cl
+                 ReadByEA16 edx, edx, eax, eax
+				 movzx ecx, word[esi+2]
+				 xchg ch, cl
+				 add edx, ecx
+				 Load16 eax, dx
+				 shr edx, 8
+				 mov [_OAL], dh
               add word[_IP], 4 ;add si, 4
               ret
 
 MovRegToMem8: pushad
-              LoadAddr edi, 1
-              GetREA8 ebx, eax, 2
-              mov dl, [ebx]
-              mov dh, [eax]
-              or dl, dh
-              mov [edi], dl
+              GetAddr edi, 1
+			  LEA8 ebx, eax, 2
+			  movzx eax, byte[eax]
+			  movzx ebx, byte[ebx]
+			  or bl, al
+			  mov [edi], bl
               popad
               add word[_IP], 3
               ret
 
 MovMem8ToReg: pushad
-              LoadAddr edi, 1
-              GetREA8 ebx, eax, 2
-              mov dl, [edi]
-              mov [ebx], dl
-              mov [eax], dl
+              GetAddr edi, 1
+			  LEA8 ebx, eax, 2
+			  mov dl, [edi]
+			  mov [eax], dl
+			  mov [ebx], dl
               popad
               add word[_IP], 3
               ret
 
 MovRegToMem16: pushad
-               LoadAddr edi, 1
-               GetREA16 ebx, eax, 2
-               mov dx, [eax]
-               or dx, [ebx]
-               mov [edi], dx
+               GetAddr edi, 1
+			   LEA16 ebx, eax, 2
+			   ReadByEA16 ebx, eax, ebx, eax
+			   or ax, bx
+			   xchg ah, al
+			   mov [edi], ax
                popad
                add word[_IP], 3
                ret
 
 MovMem16ToReg: pushad
-               LoadAddr edi, 1
-               GetREA16 ebx, eax, 2
+               GetAddr edi, 1
+               LEA16 ebx, eax, 2
                mov dx, [edi]
-               mov [ebx], dx
-               mov [eax], dx
+			   mov [edi], dx
                popad
                add word[_IP], 3
                ret
 
-LoadSegment: GetREA16 eax, ebx, 1
+LoadSegment: ;jmp $
+	         LEA16 ebx, eax, 1
              add ebx, SEGMENTS-REGS
              mov dx, [eax]
              xchg dh, dl
@@ -197,7 +195,8 @@ LoadSegment: GetREA16 eax, ebx, 1
              add word[_IP], 2
              ret
 
-LoadFromSegment: GetREA16 eax, ebx, 1
+LoadFromSegment: ;jmp $
+				 LEA16 ebx, eax, 1
                  add ebx, SEGMENTS-REGS
                  mov dx, [ebx]
                  xchg dh, dl
