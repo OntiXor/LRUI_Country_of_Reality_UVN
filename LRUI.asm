@@ -1,3 +1,6 @@
+rh8 = 0x0000001000
+rl8 = 0x0000010000
+
 ARH = 0x0000010000
 ARL = 0x0000020000
 BRH = 0x0000030000
@@ -14,6 +17,9 @@ GRH = 0x00000D0000
 GRL = 0x00000E0000
 OAH = 0x00000F0000
 OAL = 0x0000100000
+
+rh16 = 0x0000100000
+rl16 = 0x0001000000
 
 AR  = 0x0001000000
 BR  = 0x0002000000
@@ -32,6 +38,9 @@ I5  = 0x000E000000
 BE  = 0x000F000000
 SK  = 0x0010000000
 SA = SK
+
+sh = 0x0010000000
+sl = 0x0100000000
 
 .ZS = 0x0100000000
 .CS = 0x0200000000
@@ -81,8 +90,8 @@ i2  = 0x000b000000
 i3  = 0x000c000000
 i4  = 0x000d000000
 i5  = 0x000e000000
-ba  = 0x000f000000
-sa  = 0x0010000000
+be  = 0x000f000000
+sk  = 0x0010000000
 
 .zs = 0x0100000000
 .cs = 0x0200000000
@@ -105,11 +114,11 @@ sa  = 0x0010000000
 macro asg rg1, rg2, data {
         if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
                 db 80h
-                db rg1/0x0000001000+rg2/0x0000010000-11h
+                db (rg1/ARH-1)*10h+(rg2/ARH-1)
                 db data
         else if rg1 <= SA & rg1 >= AR & rg2 <= SA & rg2 >= AR
                 db 82h
-                db rg1/0x0000100000+rg2/0x0001000000-11h
+                db (rg1/AR-1)*10h+(rg2/AR-1)
                 db data/0x0100
                 db data - data/0x0100*0x0100
         end if
@@ -121,16 +130,16 @@ macro ASG rg1, rg2, data {
 macro mov rg1, rg2 {
         if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
                 db 81h 
-                db rg1/0x0000001000+rg2/0x0000010000-11h
+                db (rg1/ARH-1)*10h+(rg2/ARH-1)
         else if rg1 <= SA & rg1 >= AR & rg2 <= SA & rg2 >= AR
                 db 83h
-                db rg1/0x0000100000+rg2/0x0001000000-11h
+                db (rg1/AR-1)*10h+(rg2/AR-1)
         else if rg1 >= .ZS & rg1 <= .SX & rg2 >= AR & rg2 <= SA
                 db 88h
-                db rg1/0x0010000000+rg2/0x0001000000-11h
+                db (rg1/.ZS-1)*10h+(rg2/AR-1)
         else if rg1 >= AR & rg1 <= SA & rg2 >= .zs & rg2 <= .SX
                 db 89h
-                db rg2/0x0010000000+rg1/0x0001000000-11h
+                db (rg2/.ZS-1)*10h+(rg1/AR-1)
         else if rg1 <= OAL & rg1 >= ARH & rg2 < ARH
                 asg rg1, rg1, rg2
         else if rg1 <= SA & rg1 >= AR & rg2 < AR
@@ -145,11 +154,11 @@ macro MOV rg1, rg2 {
 macro plus rg1, rg2, value {
         if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
                 db 20h 
-                db rg1/0x0000001000+rg2/0x0000010000-11h
+                db (rg1/ARH-1)*10h+(rg2/ARH-1)
                 db value
         else if rg1 <= SA & rg1 >= AR & rg2 <= SA & rg2 >= AR
                 db 22h
-                db rg1/0x0000100000+rg2/0x0001000000-11h
+                db (rg1/AR-1)*10h+(rg2/AR-1)
                 db value/0x0100
                 db value - value/0x0100*0x0100
         end if  
@@ -161,10 +170,10 @@ macro PLUS rg1, rg2, value {
 macro add rg1, rg2 {
         if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
                 db 21h 
-                db rg1/0x0000001000+rg2/0x0000010000-11h
+                db (rg1/ARH-1)*10h+(rg2/ARH-1)
         else if rg1 <= SA & rg1 >= AR & rg2 <= SA & rg2 >= AR
                 db 23h
-                db rg1/0x0000100000+rg2/0x0001000000-11h
+                db (rg1/AR-1)*10h+(rg2/AR-1)
         else if rg1 <= OAL & rg1 >= ARH & rg2 < ARH
                 plus rg1, rg1, rg2
         else if rg1 <= SA & rg1 >= AR & rg2 < AR
@@ -179,22 +188,22 @@ macro mem rg1, rg2, rg3, rg4 {
         if rg1 <= .SX & rg1 >= .ZS & rg2 >= AR & rg2 <= SA
                 if rg3 >= ARH & rg3 <= OAL & rg4 >= ARH & rg4 <= OAL
                         db 84h
-                        db rg1/0x0010000000+rg2/0x0001000000-11h
-                        db rg3/0x0000001000+rg4/0x0000010000-11h
+                        db (rg1/.ZS-1)*10h+(rg2/AR-1)
+                        db (rg3/ARH-1)*10h+(rg4/ARH-1)
                 else if rg3 >= AR & rg3 <= OA & rg4 >= AR & rg4 <= OA
                         db 86h
-                        db rg1/0x0010000000+rg2/0x0001000000-11h
-                        db rg3/0x0000100000+rg4/0x0001000000-11h
+                        db (rg1/.ZS-1)*10h+(rg2/AR-1)
+                        db (rg1/AR-1)*10h+(rg2/AR-1)
                 end if
         else if rg3 <= .SX & rg3 >= .ZS & rg4 >= AR & rg4 <= SA
                 if rg1 >= ARH & rg1 <= OAL & rg2 >= ARH & rg2 <= OAL
                         db 85h
-                        db rg3/0x0010000000+rg4/0x0001000000-11h
-                        db rg1/0x0000001000+rg2/0x0000010000-11h
+                        db (rg3/.ZS-1)*10h+(rg4/AR-1)
+                        db (rg1/ARH-1)*10h+(rg2/ARH-1)
                 else if rg1 >= AR & rg1 <= OA & rg2 >= AR & rg2 <= OA
                         db 87h
-                        db rg3/0x0010000000+rg4/0x0001000000-11h
-                        db rg1/0x0000100000+rg2/0x0001000000-11h
+                        db (rg3/.ZS-1)*10h+(rg4/AR-1)
+                        db (rg1/AR-1)*10h+(rg2/AR-1)
                 end if
         end if
 }  

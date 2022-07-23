@@ -2,18 +2,18 @@ NoInstruction: inc word[_IP]
                ret
 
 macro LEA16 rg1, rg2, num {
-      movzx rg1, byte[esi+num]
-      mov rg2, rg1
+      movzx rg2, byte[esi+num]
+      mov rg1, rg2
       and rg2, 0x0F
       shr rg1, 4
       lea rg1, [rg1+rg1+REGS]
       lea rg2, [rg2+rg2+REGS]
 }
 macro LEA8 rg1, rg2, num {
-      movzx rg1, byte[esi+num]
-      mov rg2, rg1
-      and rg1, 0x0F
-      shr rg2, 4
+      movzx rg2, byte[esi+num]
+      mov rg1, rg2
+      and rg2, 0x0F
+      shr rg1, 4
       lea rg1, [rg1+REGS]
       lea rg2, [rg2+REGS]
 }
@@ -70,7 +70,8 @@ MovValueToByte: LEA8 ebx, eax, 1
                 add word[_IP], 3 ;add si, 3
                 ret
 
-Mov8To8: LEA8 ebx, eax, 1
+Mov8To8: ;jmp $
+		 LEA8 ebx, eax, 1
          mov dl, [eax]
          mov [ebx], dl
          add word[_IP], 2 ;add si, 2
@@ -82,7 +83,8 @@ MovValueToWord: LEA16 ebx, eax, 1
                 mov [ebx], cx
                 add word[_IP], 4 ;add si, 4
                 ret
-Mov16To16: LEA16 ebx, eax, 1
+Mov16To16: ;jmp $
+		   LEA16 ebx, eax, 1
            mov cx, [eax]
            mov [ebx], cx
            add word[_IP], 2 ;add si, 2
@@ -115,7 +117,8 @@ Add8With8: LEA8 ebx, eax, 1
            ret
 
 
-Add16With16: LEA16 ebx, eax, 1
+Add16With16: ;jmp $ 
+			 LEA16 ebx, eax, 1
 			 ReadByEA16 edx, ecx, ebx, eax
 			 add edx, ecx
 			 Load16 ebx, dx
