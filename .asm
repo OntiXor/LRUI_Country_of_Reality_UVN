@@ -1,13 +1,11 @@
 include "LRUI.asm"
 
-;mov arl, 0
-;mov arl, 0xF
-asg arl, arh, 0x76
-add arh, 1
-ifg arl, arh
-mov ar, 0xFFFF
-mov dr, ar
+mov dr, 5
+mov cr, 6
+ifneq dr, cr
+mov i0, dr
+mov i1, dr
+mov i2, dr
 cend
-mov cr, dr
 
 stop

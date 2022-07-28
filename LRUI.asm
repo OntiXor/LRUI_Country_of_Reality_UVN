@@ -244,44 +244,107 @@ macro MEM rg1, rg2, rg3, rg4 {
         mem rg1, rg2, rg3, rg4
 }
 
+;=============================================
+
 macro ifz rg1, rg2 {
 	  if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
 		 db 10h
 		 db (rg1/ARH-1)*10h+(rg2/ARH-1)
+	  else if rg1 <= SA & rg1 >= AR & rg2 <= SA & rg2 >= AR
+		 db 18h
+		 db (rg1/AR-1)*10h+(rg2/AR-1)
 	  end if
 }
-macro IFZ rg1, rg2 {
-	ifz rg1, rg2
-}
-
 macro ifeq rg1, rg2 {
 	  if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
 		 db 11h
 		 db (rg1/ARH-1)*10h+(rg2/ARH-1)
+	  else if rg1 <= SA & rg1 >= AR & rg2 <= SA & rg2 >= AR
+		 db 19h
+		 db (rg1/AR-1)*10h+(rg2/AR-1)
 	  end if
 }
-macro IFEQ rg1, rg2 {
-	ifz rg1, rg2
-}
-
 macro ifg rg1, rg2 {
 	  if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
 		 db 12h
 		 db (rg1/ARH-1)*10h+(rg2/ARH-1)
+	  else if rg1 <= SA & rg1 >= AR & rg2 <= SA & rg2 >= AR
+		 db 1Ah
+		 db (rg1/AR-1)*10h+(rg2/AR-1)
 	  end if
 }
-macro IFG rg1, rg2 {
-	ifz rg1, rg2
-}
-
 macro ifl rg1, rg2 {
 	  if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
 		 db 13h
 		 db (rg1/ARH-1)*10h+(rg2/ARH-1)
+	  else if rg1 <= SA & rg1 >= AR & rg2 <= SA & rg2 >= AR
+		 db 1Bh
+		 db (rg1/AR-1)*10h+(rg2/AR-1)
 	  end if
 }
-macro IFL rg1, rg2 {
+;;;
+macro ifnz rg1, rg2 {
+	  if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
+		 db 14h
+		 db (rg1/ARH-1)*10h+(rg2/ARH-1)
+	  else if rg1 <= SA & rg1 >= AR & rg2 <= SA & rg2 >= AR
+		 db 1Ch
+		 db (rg1/AR-1)*10h+(rg2/AR-1)
+	  end if
+}
+macro ifneq rg1, rg2 {
+	  if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
+		 db 15h
+		 db (rg1/ARH-1)*10h+(rg2/ARH-1)
+	  else if rg1 <= SA & rg1 >= AR & rg2 <= SA & rg2 >= AR
+		 db 1Dh
+		 db (rg1/AR-1)*10h+(rg2/AR-1)
+	  end if
+}
+macro ifng rg1, rg2 {
+	  if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
+		 db 16h
+		 db (rg1/ARH-1)*10h+(rg2/ARH-1)
+	  else if rg1 <= SA & rg1 >= AR & rg2 <= SA & rg2 >= AR
+		 db 1Eh
+		 db (rg1/AR-1)*10h+(rg2/AR-1)
+	  end if
+}
+macro ifnl rg1, rg2 {
+	  if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
+		 db 17h
+		 db (rg1/ARH-1)*10h+(rg2/ARH-1)
+	  else if rg1 <= SA & rg1 >= AR & rg2 <= SA & rg2 >= AR
+		 db 1Fh
+		 db (rg1/AR-1)*10h+(rg2/AR-1)
+	  end if
+}
+
+
+macro IFZ rg1, rg2 {
 	ifz rg1, rg2
+}
+macro IFEQ rg1, rg2 {
+	ife rg1, rg2
+}
+macro IFG rg1, rg2 {
+	ifg rg1, rg2
+}
+macro IFL rg1, rg2 {
+	ifl rg1, rg2
+}
+
+macro INFZ rg1, rg2 {
+	ifnz rg1, rg2
+}
+macro IFNEQ rg1, rg2 {
+	ifne rg1, rg2
+}
+macro IFNG rg1, rg2 {
+	ifng rg1, rg2
+}
+macro IFNL rg1, rg2 {
+	ifnl rg1, rg2
 }
 
 
