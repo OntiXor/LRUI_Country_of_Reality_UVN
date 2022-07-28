@@ -184,6 +184,39 @@ macro ADD rg1, rg2 {
         add rg1, rg2
 }
 
+macro minus rg1, rg2, value {
+        if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
+                db 30h 
+                db (rg1/ARH-1)*10h+(rg2/ARH-1)
+                db value
+        else if rg1 <= SA & rg1 >= AR & rg2 <= SA & rg2 >= AR
+                db 32h
+                db (rg1/AR-1)*10h+(rg2/AR-1)
+                db value/0x0100
+                db value - value/0x0100*0x0100
+        end if  
+}
+macro MINUS rg1, rg2, value {
+        minus rg1, rg1, value
+}
+
+macro sub rg1, rg2 {
+        if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
+                db 31h 
+                db (rg1/ARH-1)*10h+(rg2/ARH-1)
+        else if rg1 <= SA & rg1 >= AR & rg2 <= SA & rg2 >= AR
+                db 33h
+                db (rg1/AR-1)*10h+(rg2/AR-1)
+        else if rg1 <= OAL & rg1 >= ARH & rg2 < ARH
+                minus rg1, rg1, rg2
+        else if rg1 <= SA & rg1 >= AR & rg2 < AR
+                minus rg1, rg1, rg2
+        end if
+}
+macro SUB rg1, rg2 {
+        sub rg1, rg2
+}
+
 macro mem rg1, rg2, rg3, rg4 {
         if rg1 <= .SX & rg1 >= .ZS & rg2 >= AR & rg2 <= SA
                 if rg3 >= ARH & rg3 <= OAL & rg4 >= ARH & rg4 <= OAL
@@ -210,6 +243,60 @@ macro mem rg1, rg2, rg3, rg4 {
 macro MEM rg1, rg2, rg3, rg4 {
         mem rg1, rg2, rg3, rg4
 }
+
+macro ifz rg1, rg2 {
+	  if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
+		 db 10h
+		 db (rg1/ARH-1)*10h+(rg2/ARH-1)
+	  end if
+}
+macro IFZ rg1, rg2 {
+	ifz rg1, rg2
+}
+
+macro ifeq rg1, rg2 {
+	  if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
+		 db 11h
+		 db (rg1/ARH-1)*10h+(rg2/ARH-1)
+	  end if
+}
+macro IFEQ rg1, rg2 {
+	ifz rg1, rg2
+}
+
+macro ifg rg1, rg2 {
+	  if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
+		 db 12h
+		 db (rg1/ARH-1)*10h+(rg2/ARH-1)
+	  end if
+}
+macro IFG rg1, rg2 {
+	ifz rg1, rg2
+}
+
+macro ifl rg1, rg2 {
+	  if rg1 <= OAL & rg1 >= ARH & rg2 <= OAL & rg2 >= ARH
+		 db 13h
+		 db (rg1/ARH-1)*10h+(rg2/ARH-1)
+	  end if
+}
+macro IFL rg1, rg2 {
+	ifz rg1, rg2
+}
+
+
+macro condition_end {
+	  db 0
+} 
+macro CONDITION_END {
+	  db 0
+} 
+macro cend {
+	  db 0
+} 
+macro CEND {
+	  db 0
+} 
 
 macro stop {
     db 0xFF

@@ -1,5 +1,5 @@
 Table:
-I00: dd NoInstruction
+I00: dd StopIf
 I01: dd NoInstruction
 I02: dd NoInstruction
 I03: dd NoInstruction
@@ -16,10 +16,10 @@ I0D: dd NoInstruction
 I0E: dd NoInstruction
 I0F: dd NoInstruction
 
-I10: dd NoInstruction
-I11: dd NoInstruction
-I12: dd NoInstruction
-I13: dd NoInstruction
+I10: dd ConditionZ8
+I11: dd ConditionE8
+I12: dd ConditionG8
+I13: dd ConditionL8
 I14: dd NoInstruction
 I15: dd NoInstruction
 I16: dd NoInstruction
@@ -50,10 +50,10 @@ I2D: dd NoInstruction
 I2E: dd NoInstruction
 I2F: dd NoInstruction
 
-I30: dd NoInstruction
-I31: dd NoInstruction
-I32: dd NoInstruction
-I33: dd NoInstruction
+I30: dd SubValueTo8
+I31: dd Sub8With8
+I32: dd SubValueTo16
+I33: dd Sub16With16
 I34: dd NoInstruction
 I35: dd NoInstruction
 I36: dd NoInstruction

@@ -60,3 +60,46 @@ Result is plased to pair OAH:Receiver-1, OAL:Receiver-2
 Example: PLUS AR, AR, 2
 	 PLUS AR, BR, 0x880A
 	 PLUS I1, I0, 0xFF00
+============================
+- SUB Receiver, Source
+Receiver may be: 8 and 16 bit register
+Source may be: 8 and 16 bit register, value
+Result is plased to Receiver
+Example: SUB AR, 0xFFFE
+	 SUB AR, CR
+	 SUB CR, OA
+	 SUB I0, CR
+============================
+- PLUS Receiver-1, Receiver-2, Source
+Receiver may be: 8 and 16 bit register
+Source: value only
+Result is plased to pair Receiver-1, Receiver-2
+Example: MINUS AR, AR, 2
+	 MINUS AR, BR, 0x880A
+	 MINUS I1, I0, 0xFF00
+============================
+- IFZ Register-1, Register-2
+Registers may be only 8-bit
+If Register-1 and Regsiter-2 both is equl 0, processor executes code until CEND instruction
+- IFE Register-1, Register-2
+Registers may be only 8-bit
+If Register-1 and Regsiter-2 is equl, processor executes code until CEND instruction
+- IFG Register-1, Register-2
+Registers may be only 8-bit
+If Register-1 is greater than Regsiter-2, processor executes code until CEND instruction
+- IFL Register-1, Register-2
+Registers may be only 8-bit
+If Register-1 is lower Regsiter-2, processor executes code until CEND instruction
+
+
+
+
+
+
+
+
+
+
+
+
+

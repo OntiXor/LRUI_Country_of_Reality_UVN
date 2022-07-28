@@ -1,10 +1,11 @@
 format PE Console
 use32
 include "win32a.inc"
-entry MAIN
+entry START
 
 section '.data' readable writable
 include 'Table.asm'
+include 'ISzies.asm'
 
 CmdLinePtr: dd 0
 HFile: dd 0
@@ -108,7 +109,7 @@ SYSTIME1: dq 0, 0
 SYSTIME2: dq 0, 0
 
 section '.code' readable writable executable
-MAIN:
+START:
 
 invoke SetConsoleTitle, Title
 invoke GetStdHandle, STD_OUTPUT_HANDLE

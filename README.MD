@@ -12,3 +12,4 @@ LURI code should be written in `.asm` file and then FASM compiles it to `.bin` f
 | `table.asm` | Assigning addresses to instruction handlers |
 | `instructions.asm` | Defining instruction handlers |
 | `LRUI.asm` | Defining macros for the `.asm` code file |
+| `.asm` | File for LRUI code |
