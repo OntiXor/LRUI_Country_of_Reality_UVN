@@ -79,17 +79,22 @@ Example: MINUS AR, AR, 2
 	 MINUS I1, I0, 0xFF00
 ============================
 - IFZ Register-1, Register-2
-Registers may be only 8-bit
 If Register-1 and Regsiter-2 both is equl 0, processor executes code until CEND instruction
-- IFE Register-1, Register-2
-Registers may be only 8-bit
+- IFEQ Register-1, Register-2
 If Register-1 and Regsiter-2 is equl, processor executes code until CEND instruction
 - IFG Register-1, Register-2
-Registers may be only 8-bit
 If Register-1 is greater than Regsiter-2, processor executes code until CEND instruction
 - IFL Register-1, Register-2
-Registers may be only 8-bit
 If Register-1 is lower Regsiter-2, processor executes code until CEND instruction
+
+- IFNZ Register-1, Register-2
+If Register-1 and Regsiter-2 both isn't equl 0, processor executes code until CEND instruction
+- IFNEQ Register-1, Register-2
+If Register-1 and Regsiter-2 isn't equl, processor executes code until CEND instruction
+- IFNG Register-1, Register-2
+If Register-1 is not greater than Regsiter-2, processor executes code until CEND instruction
+- IFNL Register-1, Register-2
+If Register-1 is not lower Regsiter-2, processor executes code until CEND instruction
 
 
 
